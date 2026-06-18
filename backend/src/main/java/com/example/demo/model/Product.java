@@ -1,6 +1,10 @@
 package com.example.demo.model;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "products")
@@ -14,18 +18,22 @@ public class Product {
 
     private Double price;
 
+    private Integer stock;
+
     public Product() {
     }
 
-    public Product(Long id, String name, Double price) {
+    public Product(Long id, String name, Double price, Integer stock) {
         this.id = id;
         this.name = name;
         this.price = price;
+        this.stock = stock;
     }
 
-    public Product(String name, Double price) {
+    public Product(String name, Double price, Integer stock) {
         this.name = name;
         this.price = price;
+        this.stock = stock;
     }
 
     public Long getId() {
@@ -50,5 +58,13 @@ public class Product {
 
     public void setPrice(Double price) {
         this.price = price;
+    }
+
+    public Integer getStock() {
+        return stock;
+    }
+
+    public void setStock(Integer stock) {
+        this.stock = stock;
     }
 }

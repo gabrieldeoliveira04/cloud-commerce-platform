@@ -4,10 +4,15 @@ import org.hibernate.validator.constraints.NotBlank;
 
 import jakarta.validation.constraints.Positive;
 
+import jakarta.validation.constraints.PositiveOrZero;
+
+
 public record CreateProductRequest(
         @NotBlank
         String name,
         @Positive
-        Double price
+        Double price,
+        @PositiveOrZero
+        Integer stock
 ) {
 }

@@ -34,7 +34,7 @@ public class ProductService {
   }
 
   public Product create(CreateProductRequest request) {
-    Product product = new Product(request.name(), request.price());
+    Product product = new Product(request.name(), request.price(), request.stock());
 
     return repository.save(product);
   }
