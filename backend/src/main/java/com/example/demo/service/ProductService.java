@@ -1,12 +1,16 @@
 package com.example.demo.service;
 
-import com.example.demo.dto.UpdateProductRequest;
+import java.util.List;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+
 import com.example.demo.dto.CreateProductRequest;
+import com.example.demo.dto.UpdateProductRequest;
 import com.example.demo.exception.ProductNotFoundException;
 import com.example.demo.model.Product;
 import com.example.demo.repository.ProductRepository;
-import java.util.List;
-import org.springframework.stereotype.Service;
 
 @Service
 public class ProductService {
@@ -21,9 +25,9 @@ public class ProductService {
     return repository.findByName(name);
   }
 
-  public List<Product> getAllProducts() {
-    return repository.findAll();
-  }
+  public Page<Product> getAllProducts(Pageable pageable) {
+  return repository.findAll(pageable);
+}
 
   public Product getById(Long id) {
     return repository
