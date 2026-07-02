@@ -1,93 +1,118 @@
 package com.example.demo.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.PositiveOrZero;
 
 public class ProductFilterRequest {
 
-    private String name;
+  private String name;
 
-    @PositiveOrZero(message = "minPrice must be greater than or equal to zero")
-    private Double minPrice;
+  @PositiveOrZero(message = "minPrice must be greater than or equal to zero")
+  private Double minPrice;
 
-    @PositiveOrZero(message = "maxPrice must be greater than or equal to zero")
-    private Double maxPrice;
+  @PositiveOrZero(message = "maxPrice must be greater than or equal to zero")
+  private Double maxPrice;
 
-    private Boolean inStock;
+  private Boolean inStock;
 
-    @Min(value = 0, message = "page must be greater than or equal to zero")
-    private Integer page = 0;
+  @Min(value = 0, message = "page must be greater than or equal to zero")
+  private Integer page = 0;
 
-    @Min(value = 1, message = "size must be at least 1")
-    @Max(value = 100, message = "size must be at most 100")
-    private Integer size = 10;
-
-    private String sortBy = "id";
-
-    private String direction = "asc";
-
-    public String getName() {
-        return name;
+  @JsonIgnore
+  @Schema(hidden = true)
+  @AssertTrue(message = "minPrice must be less than or equal to maxPrice")
+  public boolean isPriceRangeValid() {
+    if (minPrice == null || maxPrice == null) {
+      return true;
     }
 
-    public Double getMinPrice() {
-        return minPrice;
-    }
+    return minPrice <= maxPrice;
+  }
 
-    public Double getMaxPrice() {
-        return maxPrice;
-    }
+  @Min(value = 1, message = "size must be at least 1")
+  @Max(value = 100, message = "size must be at most 100")
+  private Integer size = 10;
 
-    public Boolean getInStock() {
-        return inStock;
-    }
+  @Pattern(
+    regexp = "id|name|price|stock",
+    message = "sortBy must be one of: id, name, price, stock"
+  )
+  private String sortBy = "id";
 
-    public Integer getPage() {
-        return page;
-    }
+  @Pattern(
+    regexp = "asc|desc",
+    flags = Pattern.Flag.CASE_INSENSITIVE,
+    message = "direction must be asc or desc"
+  )
+  private String direction = "asc";
 
-    public Integer getSize() {
-        return size;
-    }
+  public String getName() {
+    return name;
+  }
 
-    public String getSortBy() {
-        return sortBy;
-    }
+  public Double getMinPrice() {
+    return minPrice;
+  }
 
-    public String getDirection() {
-        return direction;
-    }
+  public Double getMaxPrice() {
+    return maxPrice;
+  }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+  public Boolean getInStock() {
+    return inStock;
+  }
 
-    public void setMinPrice(Double minPrice) {
-        this.minPrice = minPrice;
-    }
+  public Integer getPage() {
+    return page;
+  }
 
-    public void setMaxPrice(Double maxPrice) {
-        this.maxPrice = maxPrice;
-    }
+  public Integer getSize() {
+    return size;
+  }
 
-    public void setInStock(Boolean inStock) {
-        this.inStock = inStock;
-    }
+  public String getSortBy() {
+    return sortBy;
+  }
 
-    public void setPage(Integer page) {
-        this.page = page;
-    }
+  public String getDirection() {
+    return direction;
+  }
 
-    public void setSize(Integer size) {
-        this.size = size;
-    }
+  public void setName(String name) {
+    this.name = name;
+  }
 
-    public void setSortBy(String sortBy) {
-        this.sortBy = sortBy;
-    }
+  public void setMinPrice(Double minPrice) {
+    this.minPrice = minPrice;
+  }
 
-    public void setDirection(String direction) {
-        this.direction = direction;
-    }
+  public void setMaxPrice(Double maxPrice) {
+    this.maxPrice = maxPrice;
+  }
+
+  public void setInStock(Boolean inStock) {
+    this.inStock = inStock;
+  }
+
+  public void setPage(Integer page) {
+    this.page = page;
+  }
+
+  public void setSize(Integer size) {
+    this.size = size;
+  }
+
+  public void setSortBy(String sortBy) {
+    this.sortBy = sortBy;
+  }
+
+  public void setDirection(String direction) {
+    this.direction = direction;
+  }
 }
