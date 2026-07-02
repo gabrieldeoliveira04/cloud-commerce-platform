@@ -1,13 +1,7 @@
 package com.example.demo.controller;
 
-import com.example.demo.dto.CreateProductRequest;
-import com.example.demo.dto.PageResponse;
-import com.example.demo.dto.ProductResponse;
-import com.example.demo.dto.UpdateProductRequest;
-import com.example.demo.model.Product;
-import com.example.demo.service.ProductService;
-import jakarta.validation.Valid;
 import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -15,6 +9,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -23,6 +18,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.demo.dto.CreateProductRequest;
+import com.example.demo.dto.PageResponse;
+import com.example.demo.dto.ProductFilterRequest;
+import com.example.demo.dto.ProductResponse;
+import com.example.demo.dto.UpdateProductRequest;
+import com.example.demo.model.Product;
+import com.example.demo.service.ProductService;
+
+import jakarta.validation.Valid;
 @RestController
 @RequestMapping("/products")
 public class ProductController {
@@ -35,23 +39,26 @@ public class ProductController {
 
   @GetMapping
   public PageResponse<ProductResponse> getProducts(
-    @RequestParam(required = false) String name,
-    @RequestParam(required = false) Double minPrice,
-    @RequestParam(required = false) Double maxPrice,
-    @RequestParam(required = false) Boolean inStock,
-    @RequestParam(defaultValue = "0") int page,
-    @RequestParam(defaultValue = "10") int size,
-    @RequestParam(defaultValue = "id") String sortBy,
-    @RequestParam(defaultValue = "asc") String direction
+    @Valid @ModelAttribute ProductFilterRequest filter
   ) {
-    Sort sort = direction.equalsIgnoreCase("desc")
-      ? Sort.by(sortBy).descending()
-      : Sort.by(sortBy).ascending();
+    Sort sort = filter.getDirection().equalsIgnoreCase("desc")
+      ? Sort.by(filter.getSortBy()).descending()
+      : Sort.by(filter.getSortBy()).ascending();
 
-    Pageable pageable = PageRequest.of(page, size, sort);
+    Pageable pageable = PageRequest.of(
+      filter.getPage(),
+      filter.getSize(),
+      sort
+    );
 
     Page<ProductResponse> productPage = productService
-      .getProducts(name, minPrice, maxPrice, inStock, pageable)
+      .getProducts(
+        filter.getName(),
+        filter.getMinPrice(),
+        filter.getMaxPrice(),
+        filter.getInStock(),
+        pageable
+      )
       .map(this::toResponse);
 
     return new PageResponse<>(
