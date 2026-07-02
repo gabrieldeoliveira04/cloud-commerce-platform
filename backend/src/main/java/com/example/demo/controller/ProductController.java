@@ -1,7 +1,13 @@
 package com.example.demo.controller;
 
+import com.example.demo.dto.CreateProductRequest;
+import com.example.demo.dto.PageResponse;
+import com.example.demo.dto.ProductResponse;
+import com.example.demo.dto.UpdateProductRequest;
+import com.example.demo.model.Product;
+import com.example.demo.service.ProductService;
+import jakarta.validation.Valid;
 import java.util.List;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -17,15 +23,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.demo.dto.CreateProductRequest;
-import com.example.demo.dto.PageResponse;
-import com.example.demo.dto.ProductResponse;
-import com.example.demo.dto.UpdateProductRequest;
-import com.example.demo.model.Product;
-import com.example.demo.service.ProductService;
-
-import jakarta.validation.Valid;
-
 @RestController
 @RequestMapping("/products")
 public class ProductController {
@@ -38,6 +35,10 @@ public class ProductController {
 
   @GetMapping
   public PageResponse<ProductResponse> getProducts(
+    @RequestParam(required = false) String name,
+    @RequestParam(required = false) Double minPrice,
+    @RequestParam(required = false) Double maxPrice,
+    @RequestParam(required = false) Boolean inStock,
     @RequestParam(defaultValue = "0") int page,
     @RequestParam(defaultValue = "10") int size,
     @RequestParam(defaultValue = "id") String sortBy,
@@ -50,7 +51,7 @@ public class ProductController {
     Pageable pageable = PageRequest.of(page, size, sort);
 
     Page<ProductResponse> productPage = productService
-      .getAllProducts(pageable)
+      .getProducts(name, minPrice, maxPrice, inStock, pageable)
       .map(this::toResponse);
 
     return new PageResponse<>(

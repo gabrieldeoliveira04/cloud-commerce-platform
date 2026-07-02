@@ -11,7 +11,8 @@ import com.example.demo.dto.UpdateProductRequest;
 import com.example.demo.exception.ProductNotFoundException;
 import com.example.demo.model.Product;
 import com.example.demo.repository.ProductRepository;
-
+import com.example.demo.specification.ProductSpecification;
+import org.springframework.data.jpa.domain.Specification;
 @Service
 public class ProductService {
 
@@ -68,4 +69,21 @@ public class ProductService {
 
     return true;
   }
+
+  public Page<Product> getProducts(
+        String name,
+        Double minPrice,
+        Double maxPrice,
+        Boolean inStock,
+        Pageable pageable
+) {
+    Specification<Product> specification =
+            Specification
+                    .where(ProductSpecification.nameContains(name))
+                    .and(ProductSpecification.priceGreaterThanOrEqualTo(minPrice))
+                    .and(ProductSpecification.priceLessThanOrEqualTo(maxPrice))
+                    .and(ProductSpecification.inStock(inStock));
+
+    return repository.findAll(specification, pageable);
+}
 }
