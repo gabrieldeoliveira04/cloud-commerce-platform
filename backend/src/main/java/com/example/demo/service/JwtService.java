@@ -1,8 +1,9 @@
 package com.example.demo.service;
 
 import java.nio.charset.StandardCharsets;
-import java.security.Key;
 import java.util.Date;
+
+import javax.crypto.SecretKey;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -29,14 +30,21 @@ public class JwtService {
     Date now = new Date();
     Date expiration = new Date(now.getTime() + expirationMs);
 
-    return Jwts
-      .builder()
+    return Jwts.builder()
       .subject(email)
       .claim("role", role)
       .issuedAt(now)
       .expiration(expiration)
       .signWith(getSigningKey())
       .compact();
+  }
+
+  public Claims extractClaims(String token) {
+    return Jwts.parser()
+      .verifyWith(getSigningKey())
+      .build()
+      .parseSignedClaims(token)
+      .getPayload();
   }
 
   public String extractEmail(String token) {
@@ -56,16 +64,7 @@ public class JwtService {
     }
   }
 
-  private Claims extractClaims(String token) {
-    return Jwts
-      .parser()
-      .verifyWith((javax.crypto.SecretKey) getSigningKey())
-      .build()
-      .parseSignedClaims(token)
-      .getPayload();
-  }
-
-  private Key getSigningKey() {
+  private SecretKey getSigningKey() {
     return Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
   }
 }
