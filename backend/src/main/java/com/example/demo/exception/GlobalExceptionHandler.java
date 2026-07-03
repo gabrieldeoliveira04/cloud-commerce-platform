@@ -1,16 +1,18 @@
 package com.example.demo.exception;
 
-import com.example.demo.dto.ErrorResponse;
-import com.example.demo.dto.ValidationErrorResponse;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import com.example.demo.dto.ErrorResponse;
+import com.example.demo.dto.ValidationErrorResponse;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -96,5 +98,18 @@ public class GlobalExceptionHandler {
     );
 
     return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
+  }
+
+  @ExceptionHandler(InvalidCredentialsException.class)
+  public ResponseEntity<ErrorResponse> handleInvalidCredentials(
+    InvalidCredentialsException exception
+  ) {
+    ErrorResponse error = new ErrorResponse(
+      LocalDateTime.now(),
+      HttpStatus.UNAUTHORIZED.value(),
+      exception.getMessage()
+    );
+
+    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
   }
 }
